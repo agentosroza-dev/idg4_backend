@@ -1,0 +1,63 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  app:
+    build: .
+    image: idg4-app
+    container_name: idg4-app-container
+    volumes:
+      - ./:/var/www/html
+      - node:/var/www/html/node_modules
+      - laravel:/var/www/html/vendor
+    command: sh /var/www/html/start.sh
+    ports:
+      - 8000:80
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: laravel
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      APP_URL: http://localhost:8000
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres-idg4-app-container
+    environment:
+      POSTGRES_DB: laravel
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      TZ: UTC
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  adminer:
+    image: adminer:4.8.1
+    container_name: adminer-idg4-app-container
+    depends_on:
+      - postgres
+    ports:
+      - 8001:8080
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+
+volumes:
+  postgres_data:
+    name: idg4-app-postgres-data
+  node:
+    name: idg4-app-node
+  laravel:
+    name: idg4-app-laravel
