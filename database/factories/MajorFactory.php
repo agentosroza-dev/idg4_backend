@@ -2,13 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\Major;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Student>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Major>
  */
-class StudentFactory extends Factory
+class MajorFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,9 +17,7 @@ class StudentFactory extends Factory
     public function definition(): array
     {
         return [
-           'name' => $this->faker->name(),
-            'major_id' => Major::inRandomOrder()->first()->id ?? Major::factory(),
-
+              'title' => $this->faker->word() . ' major',
         ];
     }
 }
