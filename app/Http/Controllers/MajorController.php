@@ -12,8 +12,9 @@ class MajorController extends Controller
      */
     public function index()
     {
-          $majors = Major::paginate(10);
-        return $majors;
+        $majors = Major::paginate(10);
+        // return $marjors;
+        return view('majors.index', compact('majors'));
     }
 
     /**
@@ -21,7 +22,7 @@ class MajorController extends Controller
      */
     public function create()
     {
-        //
+        return view('majors.create');
     }
 
     /**
@@ -29,7 +30,13 @@ class MajorController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string'
+        ]);
+
+        Major::create($validated);
+
+        return redirect()->route('majors.index')->with('success', 'major created!');
     }
 
     /**
@@ -43,24 +50,39 @@ class MajorController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Major $major)
-    {
-        //
-    }
+public function edit($id)  // Remove the type-hint
+{
+    $major = Major::findOrFail($id);
+
+    return view('majors.edit', compact('major'));
+}
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Major $major)
-    {
-        //
-    }
+public function update(Request $request, $id)  // Remove type-hint
+{
+    $validated = $request->validate([
+        'title' => 'required|string|max:255',
+    ]);
+
+    $major = Major::findOrFail($id);
+    $major->update($validated);
+
+    return redirect()->route('majors.index')->with('success', 'Major updated successfully!');
+}
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Major $major)
+    public function destroy($id)  // Remove type-hint
     {
-        //
+        $major = Major::findOrFail($id);
+        // Delete image file from storage
+        if (!$major) return response()->json(['message' => 'Not found'], 404);
+        $major->delete();
+
+        // return response()->json(['message' => 'Deleted']);
+        return redirect()->route('majors.index')->with('success', 'major delete!');
     }
 }

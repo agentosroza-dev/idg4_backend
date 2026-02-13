@@ -18,9 +18,9 @@ class StudentFactory extends Factory
     public function definition(): array
     {
         return [
-           'name' => $this->faker->name(),
+            'name' => $this->faker->name(),
             'major_id' => Major::inRandomOrder()->first()->id ?? Major::factory(),
-
+            'image' => 'default.png', // placeholder for now
         ];
     }
 }

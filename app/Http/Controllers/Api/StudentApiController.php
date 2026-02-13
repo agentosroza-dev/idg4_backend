@@ -1,26 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
-use App\Models\Major;
-use App\Models\Student;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Student;
 use Illuminate\Support\Facades\Storage as FacadesStorage;
 
-class StudentController extends Controller
+class StudentApiController extends Controller
 {
     public function index()
     {
-        $students = Student::with('major') ->orderBy('id')
-            ->paginate(10);
-        // return $students;
-        return view('students.index', compact('students'));
-    }
-
-    public function create()
-    {
-        $majors = Major::orderBy('title')->get();
-        return view('students.create', compact('majors'));
+    //    $students = Student::with('major')->latest('updated_at')->paginate(10);
+// or simply
+$students = Student::with('major')->latest()->paginate(10); // defaults to created_at
+        return response()->json($students, 200);
     }
 
     public function store(Request $request)
@@ -35,29 +29,25 @@ class StudentController extends Controller
             $validated['image'] = $request->file('image')->store('students', 'public');
         }
 
-        Student::create($validated);
+        $student = Student::create($validated);
 
-        return redirect()->route('students.index')->with('success', 'student created!');
-    }
-
-    public function edit(string $id)
-    {
-        $student = Student::findOrFail($id);
-        $majors = Major::orderBy('title')->get();
-        return view(
-            'students.edit',
-            compact('student', 'majors')
-        );
+        return response()->json($student, 201);
     }
 
     public function update(Request $request, $id)
     {
         $student = Student::findOrFail($id);
 
-        $validated = $request->validate([
-            'name' => 'required|string',
-            'major_id' => 'required|exists:majors,id',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        // $validated = $request->validate([
+        //     'name' => 'string',
+        //     'major_id' => 'exists:majors,id',
+        //     'image' => 'sometimes|image|mimes:jpg,jpeg,png|max:2048',
+        // ]);
+
+                $validated = $request->validate([
+            'name' => 'sometimes|string',
+            'major_id' => 'sometimes|exists:majors,id',
+            'image' => 'sometimes|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
@@ -76,7 +66,7 @@ class StudentController extends Controller
 
         $student->update($validated);
 
-        return redirect()->route('students.index')->with('success', 'student updated!');
+        return response()->json($student, 200);
     }
 
     public function destroy($id)
@@ -92,7 +82,6 @@ class StudentController extends Controller
         }
         if (!$student) return response()->json(['message' => 'Not found'], 404);
         $student->delete();
-        // return response()->json(['message' => 'Deleted']);
-        return redirect()->route('students.index')->with('success', 'student deleted!');
+        return response()->json(['message' => 'Deleted'], 200);
     }
 }

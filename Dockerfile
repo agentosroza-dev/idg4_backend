@@ -34,8 +34,8 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 # Copy Composer and NodeJS from their official images
-COPY --from=composer:2.2 /usr/bin/composer /usr/bin/composer
-COPY --from=node:23.10.0 /usr/local /usr/local
+COPY --from=composer:2.9.5 /usr/bin/composer /usr/bin/composer
+COPY --from=node:24-alpine /usr/local /usr/local
 
 # Copy project files
 COPY . /var/www/html

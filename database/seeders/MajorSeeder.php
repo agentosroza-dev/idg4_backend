@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Major;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Major;
 
 class MajorSeeder extends Seeder
 {
@@ -13,7 +13,6 @@ class MajorSeeder extends Seeder
      */
     public function run(): void
     {
-       Major::factory()->count(5)->create();
-
+        Major::factory()->count(10)->create();
     }
 }

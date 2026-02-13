@@ -24,8 +24,10 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
-            StudentSeeder::class,
             MajorSeeder::class,
+            StudentSeeder::class,
+            CategorySeeder::class,
+            PdfBookSeeder::class,
         ]);
     }
 }
